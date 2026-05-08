@@ -156,22 +156,14 @@ public class Entrenador {
 		return null;
 	}
 	public int revisarGimnasio(String opcion) {
-		try {
-
-		if (gimnaciosDerrotados.isEmpty()) {
-			return 1;
-		}
-		for (Gimnasio gim : gimnaciosDerrotados) {
-			if(gim.getIndice()==Integer.parseInt(opcion)+1) {
-				return gim.getIndice();
-			}
-		}
-		} catch (Exception e) {
-			// TODO: handle exception
-			System.out.println("Error");
-		}
-		return 0;
-		
+	    try {
+	
+	        return Integer.parseInt(opcion);
+	        
+	    } catch (NumberFormatException e) {
+	        
+	        return -1; 
+	    }
 	}
 	public Pokemon entregarPokemon(int indice) {
 		return equipoPokemon.get(indice);

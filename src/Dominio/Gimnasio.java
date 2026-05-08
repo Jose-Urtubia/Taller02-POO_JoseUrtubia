@@ -35,12 +35,14 @@ public class Gimnasio {
 	}
 	@Override
 	public String toString() {
-		String textEstado="Sin derrotar";
-		if(this.estado==true) {
-			textEstado= "Derrotado";
-		}
-		
-		return  indice + ") " + nombre + " - Estado: " + textEstado ;
+	    String textEstado = "Sin derrotar";
+	    
+	
+	    if (this.estado == false) { 
+	        textEstado = "Derrotado";
+	    }
+	    
+	    return indice + ") " + nombre + " - Estado: " + textEstado;
 	}
 	public int getIndice() {
 		return indice;
