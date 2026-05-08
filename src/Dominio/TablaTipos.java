@@ -24,4 +24,9 @@ public class TablaTipos {
 	        {  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 2.0, 1.0, 1.0, 0.5, 0.5 }, // SINIESTRO
 	        {  1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 2.0, 1.0 }  // HADA
 	    };
+
+		public float sacarEfectividad(int indice1, int indice2) {
+			// TODO Auto-generated method stub
+			return (float) EFECTIVIDAD[indice1][indice2];
+		}
 	}

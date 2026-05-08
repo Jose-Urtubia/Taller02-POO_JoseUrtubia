@@ -7,14 +7,26 @@ import java.util.Scanner;
 public class Entrenador {
 	private String apodo;
 	private int cantPokemones;
-	public String[] tiposDePokemons= new String[] {"normal","fuego", "agua", "planta", "electrico", "hielo", "lucha", "veneno", "tierra", "volador", "psiquico", "bicho", "roca", "fantasma", "dragon", "acero", "siniestro", "hada"};
+	private boolean estado;
+	private static  String[] tiposDePokemons= new String[] {"normal","fuego", "agua", "planta", "electrico", "hielo", "lucha", "veneno", "tierra", "volador", "psiquico", "bicho", "roca", "fantasma", "dragon", "acero", "siniestro", "hada"};
 	private List<Pokemon> equipoPokemon= new ArrayList<Pokemon>();
 	private List<Gimnasio> gimnaciosDerrotados= new ArrayList<Gimnasio>();
 
-
+	
 	public Entrenador(String apodo) {
 		this.apodo = apodo;
 		cantPokemones=0;
+		estado=true;
+	}
+	public boolean verEstado() {
+		return estado;
+		
+	}
+	public void añadirGimnasio(Gimnasio derrotado) {
+		gimnaciosDerrotados.add(derrotado);
+	}
+	public void cambiarEstado() {
+		estado= !estado;
 	}
 	public List<Pokemon> getEquipoPokemon() {
 		return equipoPokemon;
@@ -34,18 +46,29 @@ public class Entrenador {
 	public String[] getTiposDePokemons() {
 		return tiposDePokemons;
 	}
-	public void ingresarPokemon(Pokemon este) {
-		equipoPokemon.add(este);
-		cantPokemones++;
-		este.setIndice(cantPokemones);
+	public boolean ingresarPokemon(Pokemon este) {
+		if(equipoPokemon.isEmpty()) {
+			equipoPokemon.add(este);
+			este.setIndice(++cantPokemones);
+			return true;
+		}else {
+			if(equipoPokemon.contains(este)) {
+				System.out.println("Ya haz capturado este pokémon");
+				return false;
+			}
+			equipoPokemon.add(este);
+			este.setIndice(++cantPokemones);
+		}
+		return true;
+		
 		
 
 	}
 	public void revisarEquipo() {
 		int i=1;
 		for (Pokemon pokemon : equipoPokemon) {
-			System.out.println(pokemon.getIndice()+i++ + ") "+pokemon.getNombre() + "|" + pokemon.getTipo()+"|Stats totales: "+pokemon.getStatsTotales());
-			;
+			System.out.println(pokemon.getIndice() + ") "+pokemon.getNombre() + "|" + pokemon.getTipo()+"|Stats totales: "+pokemon.getStatsTotales());
+			++i;
 			if (i==6) {
 				break;
 			}
@@ -60,9 +83,9 @@ public class Entrenador {
 	}
 	public void mostrarPC(Scanner s) {
 		// TODO Auto-generated method stub
-		int i =0;
+		
 		for (Pokemon pokemon : equipoPokemon) {
-			System.out.println(pokemon.getIndice()+i++ + ") "+pokemon.getNombre() + "|" + pokemon.getTipo()+"|Stats totales: "+pokemon.getStatsTotales());
+			System.out.println(pokemon.getIndice() + ") "+pokemon.getNombre() + "|" + pokemon.getTipo()+"|Stats totales: "+pokemon.getStatsTotales());
 			
 	}
 		System.out.println("Que deseas hacer?");
@@ -71,13 +94,30 @@ public class Entrenador {
 		String opcion = s.nextLine();
 		switch (opcion) {
 		case "1":
+			try {
 			System.out.println("¿Qué pokémon deseas cambiar?");
+			System.out.print(">");
 			String indice = s.nextLine();
 			Pokemon elegidoPrimero = elegirPokemon(indice);
+			if(elegidoPrimero == null) {
+				System.out.println("error, El índice ingresado no corresponde a ningún Pokémon");
+				break;
+			}
+			System.out.println(elegidoPrimero.getNombre());
 			System.out.println("¿Por cual pokémon deseas cambiar?");
-			String indicesegundo = s.nextLine();
-			Pokemon elegidoSegundo = elegirPokemon(indice);
+			System.out.print(">");
+			String indiceSegundo = s.nextLine();
+			Pokemon elegidoSegundo = elegirPokemon(indiceSegundo);
+			if(elegidoSegundo == null) {
+				System.out.println("error, El índice ingresado no corresponde a ningún Pokémon");
+				break;
+			}
+			System.out.println(elegidoSegundo.getNombre());
 			cambiarEquipo(elegidoPrimero,elegidoSegundo);
+			}catch (Exception e) {
+				// TODO: handle exception
+
+			}
 			break;
 
 		default:
@@ -92,23 +132,90 @@ public class Entrenador {
 			System.out.println("No se puede entrenador cambiar de posicion al mismo pokémon...");
 		} else {
 			Pokemon temporal = elegidoPrimero;
-			int indiceUno= elegidoPrimero.getIndice();
+			int indiceUno= elegidoPrimero.getIndice()-1;
 			equipoPokemon.set(indiceUno, elegidoSegundo);
-			int indiceDos = elegidoSegundo.getIndice();
+			int indiceDos = elegidoSegundo.getIndice()-1;
 			equipoPokemon.set(indiceDos, temporal);
-			elegidoPrimero.setIndice(indiceDos);
-			elegidoSegundo.setIndice(indiceUno);
+			elegidoPrimero.setIndice(indiceDos+1);
+			elegidoSegundo.setIndice(indiceUno+1);
 			System.out.println("Cambio correcto :)");
 		}
 		
 	}
 	private Pokemon elegirPokemon(String indice) {
 		// TODO Auto-generated method stub
+		try {
 		for (Pokemon pokemon : equipoPokemon) {
-			if (pokemon.getIndice()==Integer.parseInt(indice)-1) {
+			if (pokemon.getIndice()==Integer.parseInt(indice)) {
 				return pokemon;
 			}
+		}}catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("");
 		}
 		return null;
+	}
+	public int revisarGimnasio(String opcion) {
+		try {
+
+		if (gimnaciosDerrotados.isEmpty()) {
+			return 1;
+		}
+		for (Gimnasio gim : gimnaciosDerrotados) {
+			if(gim.getIndice()==Integer.parseInt(opcion)+1) {
+				return gim.getIndice();
+			}
+		}
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("Error");
+		}
+		return 0;
+		
+	}
+	public Pokemon entregarPokemon(int indice) {
+		return equipoPokemon.get(indice);
+	}
+	
+	public int sacarIndiceTipoPokemon(Pokemon miPokemon) {
+		for (int i = 0; i < tiposDePokemons.length; i++) {
+			if (miPokemon.getTipo().equalsIgnoreCase(tiposDePokemons[i])) {
+				return i;
+			}
+		}
+		return 0;
+	}
+	public Pokemon elejirNuevoPokemon(Scanner s,Pokemon pokMuerto) {
+	    while (true) {
+	        
+	        for (Pokemon pokemon : equipoPokemon) {
+	            if (pokemon.verEstado()) {
+	                System.out.println(pokemon.getIndice() + ") " + pokemon.getNombre() + " | " + pokemon.getTipo() + " | Stats totales: " + pokemon.getStatsTotales());
+	            }
+	        }
+	        
+	        try {
+	            System.out.println("¿Qué pokémon deseas cambiar?");
+	            System.out.print(">");
+	            String indice = s.nextLine();
+	            
+	            Pokemon elegidoPrimero = elegirPokemon(indice);
+	       
+	            if (elegidoPrimero == null) {
+	                System.out.println("Error: El índice ingresado no corresponde a ningún Pokémon. Intenta de nuevo.\n");
+	                continue;
+	            }
+	            if (!elegidoPrimero.verEstado()) {
+	                System.out.println("Error: Ese Pokémon ya está debilitado. Por favor, elige otro.\n");
+	                continue; 
+	            }
+	            cambiarEquipo(pokMuerto, elegidoPrimero);
+	            return elegidoPrimero;
+	            
+	        } catch (Exception e) {
+	            
+	            System.out.println("Ocurrió un error inesperado de lectura. Intenta de nuevo.");
+	        }
+	    }
 	}
 }

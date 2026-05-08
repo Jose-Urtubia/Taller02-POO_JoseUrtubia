@@ -14,6 +14,7 @@ public class Pokemon {
 	private boolean estado;
 	private int statsTotales;
 	private int indice;
+	private static  String[] tiposDePokemons= new String[] {"normal","fuego", "agua", "planta", "electrico", "hielo", "lucha", "veneno", "tierra", "volador", "psiquico", "bicho", "roca", "fantasma", "dragon", "acero", "siniestro", "hada"};
 	
 	public Pokemon(String nombre, Habitat habitad, double porcentajeAparicion, int vida, int ataque, int defensa,
 			int ataqueEspecial, int defensaEspecial, int velocidad, String tipo, int indice) {
@@ -77,6 +78,17 @@ public class Pokemon {
 	public void setIndice(int indice) {
 		this.indice = indice;
 	}
+	public boolean verEstado() {
+		return estado;
+	}
 	
+	public int sacarIndiceTipoPokemon(Pokemon miPokemon) {
+		for (int i = 0; i < tiposDePokemons.length; i++) {
+			if (miPokemon.getTipo().equalsIgnoreCase(tiposDePokemons[i])) {
+				return i;
+			}
+		}
+		return 0;
+	}
 	
 }
