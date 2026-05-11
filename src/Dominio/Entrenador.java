@@ -210,4 +210,16 @@ public class Entrenador {
 	        }
 	    }
 	}
+	public boolean tienePokemonVivos() {
+	    for (Pokemon p : equipoPokemon) {
+	        if (p.verEstado() == true) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+	public void revivir() {
+		// TODO Auto-generated method stub
+		estado=true;
+	}
 }

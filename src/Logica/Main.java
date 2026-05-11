@@ -113,10 +113,10 @@ public class Main {
 				String nombre= partes[1];
 				String estadoText=partes[2];
 				AltoMando otroTipo = new AltoMando(indice, nombre);
-				for (int i = 0; i < 5; i++) {
+				for (int i = 0; i < 6; i++) {
 					aniadirPokemonAltoMando(otroTipo,partes[2+i]);
 				}
-				
+				AltoMando.add(otroTipo);
 				
 			}
 		} catch (FileNotFoundException e) {
@@ -353,7 +353,7 @@ private static void curarTodosLosPokemons() {
     for (Pokemon p : jugador.getEquipoPokemon()) {
         p.revivir();
     }
-
+    jugador.revivir();
     System.out.println("Enfermera Joy: ¡Tus Pokémon están en perfecta forma!");
     System.out.println("¡Vuelve pronto!");
 }
@@ -367,8 +367,7 @@ private static void retarAltoMando(Scanner s) {
     }
 
     System.out.println("¡Has ingresado a la Liga Pokémon!");
-    System.out.println("Las puertas se cierran detrás de ti. No hay vuelta atrás...\n");
-
+    System.out.println("Afirmate papito...");
 
     for (int i = 0; i < AltoMando.size(); i++) {
         Dominio.AltoMando contrincanteActual = AltoMando.get(i);
@@ -548,8 +547,13 @@ private static void retarGimnacio(Scanner s) {
 
 	                    if (sEnemigo > sMio) {
 	                        miPokemon.muere();
-	                        System.out.println(miPokemon.getNombre() + " ha sido derrotado.");
-	                        if (jugador.verEstado()) {
+	                        System.out.println("Ha ganado " + delOtro.getNombre() + "! " + miPokemon.getNombre() + " ha sido derrotado...");
+	                        if (!jugador.tienePokemonVivos()) {
+	                            System.out.println("¡Ya no te quedan Pokémon para luchar!");
+	                            jugador.cambiarEstado();
+	                            
+	                        } else {
+	                    
 	                            miPokemon = jugador.elejirNuevoPokemon(s, miPokemon);
 	                        }
 	                    } else if (sMio >= sEnemigo) { 	                        delOtro.muere();
@@ -592,101 +596,102 @@ private static void retarGimnacio(Scanner s) {
 	}
 	
 
-	private static void pelear(AltoMando contrincante, Scanner s) {
-	    int indiceEnemigo = 0;
-	    System.out.println("\n¡Te enfrentas al Alto Mando " + contrincante.getNombre() + "!");
-	    Pokemon delOtro = contrincante.entregarPokemon(indiceEnemigo);
-	    System.out.println(contrincante.getNombre() + " saca a " + delOtro.getNombre() + "!");
-	    
-	    Pokemon miPokemon = jugador.entregarPokemon(0);
-	    System.out.println(jugador.getApodo() + " saca a " + miPokemon.getNombre() + "!");
+private static void pelear(AltoMando contrincante, Scanner s) {
+    int indiceEnemigo = 0;
+    System.out.println("\n¡Te enfrentas al Alto Mando " + contrincante.getNombre() + "!");
+    
+    Pokemon delOtro = contrincante.entregarPokemon(indiceEnemigo);
+    System.out.println(contrincante.getNombre() + " saca a " + delOtro.getNombre() + "!");
+    
+    Pokemon miPokemon = jugador.entregarPokemon(0);
+    System.out.println(jugador.getApodo() + " saca a " + miPokemon.getNombre() + "!");
 
-	    String opcion = "";
-	    
-	    while (jugador.verEstado() && contrincante.verEstado() && !opcion.equals("3")) {
-	        System.out.println("\n--- MENÚ DE COMBATE ---");
-	        System.out.println("1) Atacar\n2) Cambiar de pokemon\n3) Rendirse");
-	        System.out.print(">");
-	        
-	        try {
-	            opcion = s.nextLine();
-	            switch (opcion) {
-	                case "1":
-	                    int baseMio = miPokemon.getStatsTotales();
-	                    int baseEnemigo = delOtro.getStatsTotales();
-	                    
-	                    System.out.println("\n" + miPokemon.getNombre() + " -> " + baseMio + " puntos");
-	                    System.out.println(delOtro.getNombre() + " -> " + baseEnemigo + " puntos\n");
+    String opcion = "";
+    
+    while (jugador.verEstado() && contrincante.verEstado() && !opcion.equals("3")) {
+        System.out.println("\n--- MENÚ DE COMBATE ---");
+        System.out.println("1) Atacar\n2) Cambiar de pokemon\n3) Rendirse");
+        System.out.print(">");
+        
+        try {
+            opcion = s.nextLine();
+            switch (opcion) {
+                case "1":
+                    int baseMio = miPokemon.getStatsTotales();
+                    int baseEnemigo = delOtro.getStatsTotales();
+                    
+                    System.out.println("\n" + miPokemon.getNombre() + " -> " + baseMio + " puntos");
+                    System.out.println(delOtro.getNombre() + " -> " + baseEnemigo + " puntos\n");
 
-	                    int iContrincante = delOtro.sacarIndiceTipoPokemon(delOtro);
-	                    int iMio = miPokemon.sacarIndiceTipoPokemon(miPokemon);
-	                    
-	                    float efecEnemiga = tablaTipos.sacarEfectividad(iContrincante, iMio);
-	                    float efecMia = tablaTipos.sacarEfectividad(iMio, iContrincante);
+                    int iContrincante = delOtro.sacarIndiceTipoPokemon(delOtro);
+                    int iMio = miPokemon.sacarIndiceTipoPokemon(miPokemon);
+                    
+                    float efecEnemiga = tablaTipos.sacarEfectividad(iContrincante, iMio);
+                    float efecMia = tablaTipos.sacarEfectividad(iMio, iContrincante);
 
-	                    if (efecMia > 1.0f) { System.out.println(miPokemon.getNombre() + " es súper efectivo contra " + delOtro.getNombre() + "!"); } 
-	                    else if (efecMia < 1.0f && efecMia > 0.0f) { System.out.println(miPokemon.getNombre() + " no es efectivo contra " + delOtro.getNombre() + "!"); } 
-	                    else if (efecMia == 0.0f) { System.out.println("El ataque de " + miPokemon.getNombre() + " no afecta a " + delOtro.getNombre() + "!"); }
+                    // Mensajes de efectividad
+                    if (efecMia > 1.0f) { System.out.println(miPokemon.getNombre() + " es súper efectivo contra " + delOtro.getNombre() + "!"); } 
+                    else if (efecMia < 1.0f && efecMia > 0.0f) { System.out.println(miPokemon.getNombre() + " no es efectivo contra " + delOtro.getNombre() + "!"); } 
 
-	                    if (efecEnemiga > 1.0f) { System.out.println(delOtro.getNombre() + " es súper efectivo contra " + miPokemon.getNombre() + "!"); } 
-	                    else if (efecEnemiga < 1.0f && efecEnemiga > 0.0f) { System.out.println(delOtro.getNombre() + " no es efectivo contra " + miPokemon.getNombre() + "!"); } 
-	                    else if (efecEnemiga == 0.0f) { System.out.println("El ataque de " + delOtro.getNombre() + " no afecta a " + miPokemon.getNombre() + "!"); }
+                    if (efecEnemiga > 1.0f) { System.out.println(delOtro.getNombre() + " es súper efectivo contra " + miPokemon.getNombre() + "!"); } 
+                    else if (efecEnemiga < 1.0f && efecEnemiga > 0.0f) { System.out.println(delOtro.getNombre() + " no es efectivo contra " + miPokemon.getNombre() + "!"); }
 
-	                    float sEnemigo = baseEnemigo * efecEnemiga;
-	                    float sMio = baseMio * efecMia;
+                    float sEnemigo = baseEnemigo * efecEnemiga;
+                    float sMio = baseMio * efecMia;
 
-	                    System.out.println("\nNuevo puntaje:");
-	                    System.out.println(miPokemon.getNombre() + " -> " + sMio + " puntos");
-	                    System.out.println(delOtro.getNombre() + " -> " + sEnemigo + " puntos\n");
+                    System.out.println("\nNuevo puntaje:");
+                    System.out.println(miPokemon.getNombre() + " -> " + sMio + " puntos");
+                    System.out.println(delOtro.getNombre() + " -> " + sEnemigo + " puntos\n");
 
-	                    if (sEnemigo > sMio) {
-	                        miPokemon.muere();
-	                        System.out.println("Ha ganado " + delOtro.getNombre() + "! " + miPokemon.getNombre() + " ha sido derrotado...");
-	                        
-	                        if (jugador.verEstado()) {
-	                            miPokemon = jugador.elejirNuevoPokemon(s, miPokemon);
-	                        }
-	                        
-	                    } else if (sMio >= sEnemigo) {
-	                        delOtro.muere();
-	                        System.out.println("Ha ganado " + miPokemon.getNombre() + "! " + delOtro.getNombre() + " ha sido derrotado...");
-	                        
-	                        indiceEnemigo++;
-	                   
-	                        if (indiceEnemigo < 5 ){
-	                            delOtro = contrincante.entregarPokemon(indiceEnemigo);
-	                            System.out.println("\n" + contrincante.getNombre() + " envía a su siguiente Pokémon: " + delOtro.getNombre());
-	                        } else {
-	                            System.out.println("\n¡Has derrotado a todos los Pokémon de " + contrincante.getNombre() + "!");
-	                            contrincante.cambiarEstado();
-	                        }
-	                    }
-	                    break;
+                    // Lógica de victoria/derrota
+                    if (sEnemigo > sMio) {
+                        miPokemon.muere();
+                        System.out.println("Ha ganado " + delOtro.getNombre() + "! " + miPokemon.getNombre() + " ha sido derrotado...");
+                        
+                        // REGLA DE SUPERVIVENCIA:
+                        if (!jugador.tienePokemonVivos()) {
+                            System.out.println("¡Ya no te quedan Pokémon para luchar! Has perdido el desafío de la Liga.");
+                            jugador.cambiarEstado(); // Esto rompe el while al volver el estado false
+                        } else {
+                            miPokemon = jugador.elejirNuevoPokemon(s, miPokemon);
+                        }
+                        
+                    } else if (sMio >= sEnemigo) {
+                        delOtro.muere();
+                        System.out.println("¡Has derrotado a " + delOtro.getNombre() + "!");
+                        
+                        indiceEnemigo++;
+                   
+                        if (indiceEnemigo < 6) { // Ajustado a tus 6 Pokémon estrictos
+                            delOtro = contrincante.entregarPokemon(indiceEnemigo);
+                            System.out.println("\n" + contrincante.getNombre() + " envía a su siguiente Pokémon: " + delOtro.getNombre());
+                        } else {
+                            System.out.println("\n¡Has derrotado a todos los Pokémon de " + contrincante.getNombre() + "!");
+                            contrincante.cambiarEstado();
+                        }
+                    }
+                    break;
 
-	                case "2":
-	                    Pokemon cambio = jugador.elejirNuevoPokemon(s, miPokemon);
-	                    if (cambio != null) {
-	                        miPokemon = cambio;
-	                    }
-	                    break;
+                case "2":
+                    Pokemon cambio = jugador.elejirNuevoPokemon(s, miPokemon);
+                    if (cambio != null) {
+                        miPokemon = cambio;
+                    }
+                    break;
 
-	                case "3":
-	                    System.out.println("Has huido del combate...");
-	                    break;
-	            }
-	        } catch (Exception e) {
-	            System.out.println("Error en la entrada de datos.");
-	        }
-	    }
-	    
-	    
-	    if (!contrincante.verEstado()) {
-	        System.out.println("¡Felicidades! Has superado esta etapa de la Liga Pokémon.");
-	    }
-	}
-
-
-
+                case "3":
+                    System.out.println("Has huido del combate...");
+                    break;
+            }
+        } catch (Exception e) {
+            System.out.println("Error en la entrada de datos.");
+        }
+    }
+    
+    if (!contrincante.verEstado()) {
+        System.out.println("¡Felicidades! Has superado esta etapa de la Liga Pokémon.");
+    }
+}
 	
 
 	private static void accesoAlPc(Scanner s) {
